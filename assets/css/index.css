@@ -1,0 +1,20 @@
+table{
+    border: solid 1px #000;
+}
+
+th{
+    border: solid 1px #000;
+}
+
+td{
+    border: solid 1px #000;
+    text-align: center;
+}
+
+div{
+    padding-bottom: 5px;
+}
+
+.box{
+    display: inline;
+}

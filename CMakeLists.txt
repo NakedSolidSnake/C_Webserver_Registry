@@ -8,7 +8,8 @@ set(CMAKE_BUILD_TYPE Debug)
 
 # build webserver
 add_executable(webserver "")
-target_link_libraries(webserver PUBLIC ulfius)
+# target_link_libraries(webserver PUBLIC ulfius ipc orcania)
+target_link_libraries(webserver PUBLIC ulfius orcania)
 
 target_sources(webserver
   PUBLIC
@@ -16,3 +17,4 @@ target_sources(webserver
 )
 
 install(TARGETS webserver DESTINATION bin)
+file (COPY assets DESTINATION bin)

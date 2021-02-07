@@ -5,8 +5,9 @@
  * gcc -o test test.c -lulfius
  */
 #include <stdio.h>
+#include <string.h>
 #include <ulfius.h>
-#include <file/file.h>
+// #include <file/file.h>
 
 #define PORT 8095
 
@@ -43,23 +44,23 @@ char * print_map(const struct _u_map * map) {
 /**
  * Callback function for the web application on /helloworld url call
  */
-int callback_index(const struct _u_request *request, struct _u_response *response, void *user_data)
-{
-    char *page = NULL;
-    FILE_getFileContent("assets/pages/index.html", "r", &page);
-    ulfius_set_string_body_response(response, 200, page);
-    free(page);
-    return U_CALLBACK_CONTINUE;
-}
+// int callback_index(const struct _u_request *request, struct _u_response *response, void *user_data)
+// {
+//     char *page = NULL;
+//     FILE_getFileContent("assets/pages/index.html", "r", &page);
+//     ulfius_set_string_body_response(response, 200, page);
+//     free(page);
+//     return U_CALLBACK_CONTINUE;
+// }
 
-int callback_new(const struct _u_request *request, struct _u_response *response, void *user_data)
-{
-    char *page = NULL;
-    FILE_getFileContent("assets/pages/new.html", "r", &page);
-    ulfius_set_string_body_response(response, 200, page);
-    free(page);
-    return U_CALLBACK_CONTINUE;
-}
+// int callback_new(const struct _u_request *request, struct _u_response *response, void *user_data)
+// {
+//     char *page = NULL;
+//     FILE_getFileContent("assets/pages/new.html", "r", &page);
+//     ulfius_set_string_body_response(response, 200, page);
+//     free(page);
+//     return U_CALLBACK_CONTINUE;
+// }
 
 int callback_edit(const struct _u_request *request, struct _u_response *response, void *user_data)
 {
@@ -69,9 +70,12 @@ int callback_edit(const struct _u_request *request, struct _u_response *response
 
 int callback_insert(const struct _u_request *request, struct _u_response *response, void *user_data)
 {
-    char * post_params = print_map(request->map_post_body),
-       * url_params = print_map(request->map_url);
-    printf("POST parameter fname: %s\n", u_map_get(request->map_post_body, "fname"));
+    char *url_params = print_map(request->map_url);
+    char *headers = print_map(request->map_header);
+    char *cookies = print_map(request->map_cookie);
+    char *post_params = print_map(request->map_post_body);
+
+    // printf("POST parameter fname: %s\n", u_map_get(request->map_post_body, "fname"));
     //   printf("POST parameter faddress: %s\n", u_map_get(request->map_post_body, "faddress"));
     //   printf("POST parameter fage: %s\n", u_map_get(request->map_post_body, "fage"));
     // char * post_params = print_map(request->map_post_body);
@@ -112,14 +116,15 @@ int main(void)
     }
     
     u_map_put(instance.default_headers, "Access-Control-Allow-Origin", "*");
-
-    instance.max_post_body_size = 1024 * 8;
-    // instance.max_post_param_size = 1024;
+  
+    // Maximum body size sent by the client is 1 Kb
+    instance.max_post_body_size = 1024;
+    instance.max_post_param_size = 1024;
 
 
     // Endpoint list declaration
-    ulfius_add_endpoint_by_val(&instance, "GET", "/", NULL, 0, &callback_index, NULL);
-    ulfius_add_endpoint_by_val(&instance, "GET", "/new", NULL, 0, &callback_new, NULL);
+    // ulfius_add_endpoint_by_val(&instance, "GET", "/", NULL, 0, &callback_index, NULL);
+    // ulfius_add_endpoint_by_val(&instance, "GET", "/new", NULL, 0, &callback_new, NULL);
     ulfius_add_endpoint_by_val(&instance, "GET", "/edit", NULL, 0, &callback_edit, NULL);
     ulfius_add_endpoint_by_val(&instance, "POST", "/insert", NULL, 1, &callback_insert, NULL);
     ulfius_add_endpoint_by_val(&instance, "POST", "/delete", NULL, 0, &callback_delete, NULL);
