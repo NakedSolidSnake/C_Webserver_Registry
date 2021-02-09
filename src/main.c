@@ -9,10 +9,11 @@
 #include <ulfius.h>
 #include <file/file.h>
 #include <database/database.h>
+#include <collection/list_static.h>
 
-#define NAME_LEN 120
-#define ADDRESS_LEN 120
-#define MAX_REGISTRIES 100
+#define NAME_LEN        120
+#define ADDRESS_LEN     120
+#define MAX_REGISTRIES  100
 
 typedef struct
 {
@@ -29,15 +30,20 @@ typedef struct
 } Registries;
 
 static Registries registries = {0};
+static List *static_list;
 
 #define PORT 8095
 
-void Select_get(char **data, int columns, void *user_data)
+void Select_get(char **data, int rows, void *user_data)
 {
-  for (int i = 0; i < columns; i++)
-  {
-    printf("%s\n", data[i]);
-  }
+  List *static_list = (List *)user_data;
+  Person person;
+  person.id = atoi(data[0]);  
+  strncpy(person.address, data[1], ADDRESS_LEN);
+  strncpy(person.name, data[2], NAME_LEN);
+  person.age = atoi(data[3]);
+
+  List_add(static_list, &person);
 }
 
 char *select_query(void *data)
@@ -76,11 +82,20 @@ int callback_index(const struct _u_request *request, struct _u_response *respons
   FILE_getFileContent("assets/pages/last.html", "r", &last);
   char *data = "<td>Cristiano Silva de Souza</td><td>Street 14</td><td>34</td>";
   int dummy = 10;
+
   Database_queryExec(select_query, &dummy);
-  Database_resultSet(Select_get, NULL);
+  List_clear(static_list);
+  Database_resultSet(Select_get, static_list);
   size_t len = strlen(first) + strlen(last) + strlen(data);
   char *page = (char *)malloc(len + 1);
   snprintf(page, len, "%s%s%s", first, data, last);
+
+  for( int i = 0; i < List_size(static_list); i++)
+  {
+    Person person;
+    List_getObjectByIndex(static_list, i, &person);
+    printf("ID: %d\nName: %s\nAddress: %s\nAge: %d\n", person.id, person.name, person.address, person.age);
+  }
 
   ulfius_set_string_body_response(response, 200, page);
 
@@ -146,6 +161,8 @@ int main(void)
 {
   struct _u_instance instance;
 
+  static_list = List_create(100, sizeof(Person));
+
   Database_init("localhost", "root", "root", "Registry");
 
   // Initialize instance with the port number
@@ -184,6 +201,7 @@ int main(void)
   }
 
   printf("End framework\n");
+  List_destroy(static_list);
   ulfius_stop_framework(&instance);
   ulfius_clean_instance(&instance);
   Database_close();
