@@ -32,6 +32,26 @@ static Registries registries = {0};
 
 #define PORT 8095
 
+void Select_get(char **data, int columns, void *user_data)
+{
+  for (int i = 0; i < columns; i++)
+  {
+    printf("%s\n", data[i]);
+  }
+}
+
+char *select_query(void *data)
+{
+  static char buffer[1024];
+
+  memset(buffer, 0, 1024);
+
+  snprintf(buffer, 1024, "select * from Person");
+
+  return buffer;
+}
+
+
 char *query(void *data)
 {
   static char buffer[1024];
@@ -55,6 +75,9 @@ int callback_index(const struct _u_request *request, struct _u_response *respons
   FILE_getFileContent("assets/pages/first.html", "r", &first);
   FILE_getFileContent("assets/pages/last.html", "r", &last);
   char *data = "<td>Cristiano Silva de Souza</td><td>Street 14</td><td>34</td>";
+  int dummy = 10;
+  Database_queryExec(select_query, &dummy);
+  Database_resultSet(Select_get, NULL);
   size_t len = strlen(first) + strlen(last) + strlen(data);
   char *page = (char *)malloc(len + 1);
   snprintf(page, len, "%s%s%s", first, data, last);
