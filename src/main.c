@@ -10,10 +10,19 @@
 #include <file/file.h>
 #include <database/database.h>
 #include <collection/list_static.h>
+#include <json/json.h>
 
 #define NAME_LEN        120
 #define ADDRESS_LEN     120
 #define MAX_REGISTRIES  100
+
+typedef struct 
+{
+    char *hostname;
+    char *username;
+    char *password;
+    char *database;
+} Database;
 
 typedef struct
 {
@@ -33,6 +42,8 @@ static Registries registries = {0};
 static List *static_list;
 
 #define PORT 8095
+
+static void loadParams(const char *properties, Database *database);
 
 void Select_get(char **data, int rows, void *user_data)
 {
@@ -161,9 +172,14 @@ int main(void)
 {
   struct _u_instance instance;
 
+  Database database = {0};
+
+  loadParams("properties/properties.json", &database);
+
   static_list = List_create(100, sizeof(Person));
 
-  Database_init("localhost", "root", "root", "Registry");
+  // Database_init("localhost", "root", "root", "Registry");
+  Database_init(database.hostname, database.username, database.password, database.database);
 
   // Initialize instance with the port number
   if (ulfius_init_instance(&instance, PORT, NULL, NULL) != U_OK)
@@ -207,4 +223,27 @@ int main(void)
   Database_close();
 
   return 0;
+}
+
+static void loadParams(const char *properties, Database *database)
+{
+    char buffer[1024] = {0};
+    IHandler iParams[] = 
+    {
+        {.token = "hostname", .data = &database->hostname, .type = eType_String, .child = NULL},
+        {.token = "username", .data = &database->username, .type = eType_String, .child = NULL},
+        {.token = "password", .data = &database->password, .type = eType_String, .child = NULL},
+        {.token = "database", .data = &database->database, .type = eType_String, .child = NULL}
+    };
+
+    IHandler iDatabase[] = 
+    {
+        {.token = "database", .data = NULL, .type = eType_Object, .child = iParams, .size = getItems(iParams)}
+    };
+
+    if(!getJsonFromFile(properties, buffer, 1024)){
+        exit(EXIT_FAILURE);
+    }
+
+    processJson(buffer, iDatabase, getItems(iDatabase));
 }
