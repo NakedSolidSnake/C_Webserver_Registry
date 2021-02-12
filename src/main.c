@@ -87,19 +87,12 @@ char *query(void *data)
  */
 int callback_index(const struct _u_request *request, struct _u_response *response, void *user_data)
 {
-  char *first = NULL;
-  char *last = NULL;
-  FILE_getFileContent("assets/pages/first.html", "r", &first);
-  FILE_getFileContent("assets/pages/last.html", "r", &last);
-  char *data = "<td>Cristiano Silva de Souza</td><td>Street 14</td><td>34</td>";
-  int dummy = 10;
+ 
+  int dummy;
 
   Database_queryExec(select_query, &dummy);
   List_clear(static_list);
   Database_resultSet(Select_get, static_list);
-  size_t len = strlen(first) + strlen(last) + strlen(data);
-  char *page = (char *)malloc(len + 1);
-  snprintf(page, len, "%s%s%s", first, data, last);
 
   for( int i = 0; i < List_size(static_list); i++)
   {
@@ -108,10 +101,9 @@ int callback_index(const struct _u_request *request, struct _u_response *respons
     printf("ID: %d\nName: %s\nAddress: %s\nAge: %d\n", person.id, person.name, person.address, person.age);
   }
 
+  char *page = NULL;
+  FILE_getFileContent("assets/pages/index.html", "r", &page);
   ulfius_set_string_body_response(response, 200, page);
-
-  free(first);
-  free(last);
   free(page);
 
   return U_CALLBACK_CONTINUE;

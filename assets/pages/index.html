@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            table,
+            td {
+                border: 1px solid black;
+            }
+        </style>
+        <script src="../scripts/script.js"></script>
+    </head>
+
+    <body>
+
+        <p>Click the buttons to create and delete row(s) for the table.</p>
+
+        <table id="myTable">
+            <thead>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Age</th>
+            </thead>
+            <tr>
+                <td>Cristiano</td>
+                <td>Rua dos Bobos</td>
+                <td>34</td>
+            </tr>
+        </table>
+
+        <form action="/new" method="get">
+            <button type="submit">New</button>
+        </form>
+        
+        <form action="/delete" method="post">
+            <button type="submit">Delete</button>
+        </form>
+        
+    </body>
+
+</html>
