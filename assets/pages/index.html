@@ -7,24 +7,80 @@
                 border: 1px solid black;
             }
         </style>
-        <script src="../scripts/script.js"></script>
+        <script>
+
+            class Person{
+                id;
+                name;
+                address;
+                age;
+            }
+
+            function splitObject(objects){
+                var splitedObjects = objects.split(';')
+                return splitedObjects;
+            }
+
+            function createObject(values, object){
+                if(values.length > 0){
+                    var fields = values.split(',');
+                    object.id = fields[0];
+                    object.name = fields[1];
+                    object.address = fields[2];
+                    object.age = fields[3];
+                    return true;
+                }
+
+                return false;
+            }
+
+            function addPerson(person) {
+                var table = document.getElementById("myTable");
+                var row = table.insertRow(1);
+                var idCell1 = row.insertCell(0);
+                var nameCell2 = row.insertCell(1);
+                var addressCell3 = row.insertCell(2)
+                var ageCell3 = row.insertCell(3)
+
+                idCell1.innerHTML = person.id;
+                nameCell2.innerHTML = person.name;
+                addressCell3.innerHTML = person.address;
+                ageCell3.innerHTML = person.age;
+
+            }
+
+            function getData(){
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+                    var objects = splitObject(xmlHttp.responseText);
+                    for (let i = 0; i < objects.length; i++){
+                        person = new Person();
+                        if(createObject(objects[i], person) === true){
+                            addPerson(person)
+                        }
+                    }
+                }
+            }
+                xmlHttp.open("GET", "/send", true); // true for asynchronous 
+                xmlHttp.send(null);
+
+            }
+        </script>
     </head>
 
-    <body>
+    <body onload="getData()">
 
         <p>Click the buttons to create and delete row(s) for the table.</p>
 
         <table id="myTable">
             <thead>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Address</th>
                 <th>Age</th>
             </thead>
-            <tr>
-                <td>Cristiano</td>
-                <td>Rua dos Bobos</td>
-                <td>34</td>
-            </tr>
+            
         </table>
 
         <form action="/new" method="get">

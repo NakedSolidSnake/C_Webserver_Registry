@@ -86,21 +86,7 @@ char *query(void *data)
  * Callback function for the web application on /helloworld url call
  */
 int callback_index(const struct _u_request *request, struct _u_response *response, void *user_data)
-{
- 
-  int dummy;
-
-  Database_queryExec(select_query, &dummy);
-  List_clear(static_list);
-  Database_resultSet(Select_get, static_list);
-
-  for( int i = 0; i < List_size(static_list); i++)
-  {
-    Person person;
-    List_getObjectByIndex(static_list, i, &person);
-    printf("ID: %d\nName: %s\nAddress: %s\nAge: %d\n", person.id, person.name, person.address, person.age);
-  }
-
+{  
   char *page = NULL;
   FILE_getFileContent("assets/pages/index.html", "r", &page);
   ulfius_set_string_body_response(response, 200, page);
@@ -126,10 +112,6 @@ int callback_edit(const struct _u_request *request, struct _u_response *response
 
 int callback_insert(const struct _u_request *request, struct _u_response *response, void *user_data)
 {
-  printf("POST parameter fname: %s\n", u_map_get(request->map_post_body, "fname"));
-  printf("POST parameter faddress: %s\n", u_map_get(request->map_post_body, "faddress"));
-  printf("POST parameter fage: %s\n", u_map_get(request->map_post_body, "fage"));
-
   Person person = {.id = 0};
   strncpy(person.name, u_map_get(request->map_post_body, "fname"), NAME_LEN);
   strncpy(person.address, u_map_get(request->map_post_body, "faddress"), ADDRESS_LEN);
@@ -148,6 +130,28 @@ int callback_delete(const struct _u_request *request, struct _u_response *respon
 {
   printf("POST parameter.\n");
   ulfius_set_string_body_response(response, 200, "Ok");
+  return U_CALLBACK_CONTINUE;
+}
+
+int callback_send_data(const struct _u_request *request, struct _u_response *response, void *user_data)
+{
+  int dummy;
+  char format[256];
+  char data[8192] = {0};
+  Database_queryExec(select_query, &dummy);
+  List_clear(static_list);
+  Database_resultSet(Select_get, static_list);
+
+  for( int i = 0; i < List_size(static_list); i++)
+  {
+    Person person;
+    List_getObjectByIndex(static_list, i, &person);
+    memset(format, 0, sizeof(format));
+    snprintf(format, sizeof(format), "%d,%s,%s,%d;", person.id, person.name, person.address, person.age);
+    strncat(data, format, sizeof(data));
+  }
+  
+  ulfius_set_string_body_response(response, 200, data);
   return U_CALLBACK_CONTINUE;
 }
 
@@ -192,6 +196,8 @@ int main(void)
   ulfius_add_endpoint_by_val(&instance, "GET", "/edit", NULL, 0, &callback_edit, NULL);
   ulfius_add_endpoint_by_val(&instance, "POST", "/insert", NULL, 1, &callback_insert, NULL);
   ulfius_add_endpoint_by_val(&instance, "POST", "/delete", NULL, 0, &callback_delete, NULL);
+  ulfius_add_endpoint_by_val(&instance, "GET", "/send", NULL, 0, &callback_send_data, NULL);
+  
 
   ulfius_set_default_endpoint(&instance, &callback_default, NULL);
 
