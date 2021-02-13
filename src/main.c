@@ -69,7 +69,7 @@ char *select_query(void *data)
 }
 
 
-char *query(void *data)
+char *insert_query(void *data)
 {
   static char buffer[1024];
 
@@ -78,6 +78,16 @@ char *query(void *data)
   memset(buffer, 0, 1024);
 
   snprintf(buffer, 1024, "insert into Person (name, address, age) values(\'%s\', \'%s\', %d)", person->name, person->address, person->age);
+
+  return buffer;
+}
+
+char *delete_query(void *data)
+{  
+  int id = *(int *)data;
+  static char buffer[1024] = {0};  
+
+  snprintf(buffer, 1024, "delete from Person where id = %d", id);
 
   return buffer;
 }
@@ -117,7 +127,7 @@ int callback_insert(const struct _u_request *request, struct _u_response *respon
   strncpy(person.address, u_map_get(request->map_post_body, "faddress"), ADDRESS_LEN);
   person.age = atoi(u_map_get(request->map_post_body, "fage"));
 
-  Database_queryExec(query, &person);
+  Database_queryExec(insert_query, &person);
 
   char *page = NULL;
   FILE_getFileContent("assets/pages/index.html", "r", &page);
@@ -128,8 +138,15 @@ int callback_insert(const struct _u_request *request, struct _u_response *respon
 
 int callback_delete(const struct _u_request *request, struct _u_response *response, void *user_data)
 {
-  printf("POST parameter.\n");
-  ulfius_set_string_body_response(response, 200, "Ok");
+  printf("POST parameter ID: %s.\n", u_map_get(request->map_post_body, "id"));
+  int id = atoi(u_map_get(request->map_post_body, "id"));
+  Database_queryExec(delete_query, &id);
+
+  char *page = NULL;
+  FILE_getFileContent("assets/pages/index.html", "r", &page);
+  ulfius_set_string_body_response(response, 200, page);
+  free(page);
+  
   return U_CALLBACK_CONTINUE;
 }
 

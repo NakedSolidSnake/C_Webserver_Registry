@@ -2,10 +2,31 @@
 <html>
     <head>
         <style>
-            table,
-            td {
-                border: 1px solid black;
-            }
+            	body { 
+			text-align: center; 
+		} 
+
+		h1 { 
+			color: green; 
+		} 
+
+		/* Basic CSS to design table */ 
+		table { 
+			border-collapse: collapse; 
+			width: 100%; 
+		} 
+
+		th, 
+		td { 
+			padding: 8px; 
+			text-align: left; 
+			border-bottom: 1px solid #ddd; 
+		} 
+
+		/* CSS command for the row to highlight */ 
+		.highlight { 
+			background-color: #b8b8b8; 
+		} 
         </style>
         <script>
 
@@ -15,6 +36,8 @@
                 address;
                 age;
             }
+
+            var id;
 
             function splitObject(objects){
                 var splitedObjects = objects.split(';')
@@ -66,6 +89,19 @@
                 xmlHttp.send(null);
 
             }
+
+            function getSelectedRow(){
+
+                table = document.getElementById('myTable');
+                // var content = table.row('.selected').value();
+                var columns=table.querySelectorAll('td');
+                // console.log(content);
+                for(var i=0;i<columns.length;i++)
+                    console.log('Column '+i+': '+columns[i].innerHTML );               
+            }
+
+
+            
         </script>
     </head>
 
@@ -79,17 +115,90 @@
                 <th>Name</th>
                 <th>Address</th>
                 <th>Age</th>
-            </thead>
-            
+            </thead>         
         </table>
 
         <form action="/new" method="get">
             <button type="submit">New</button>
         </form>
         
-        <form action="/delete" method="post">
-            <button type="submit">Delete</button>
-        </form>
+        
+
+        <script>
+            var row_selected;
+
+            function clearSelection(){
+                var table = document.getElementById('myTable');
+                var rows = table.querySelectorAll('tr');
+
+                for(var i = 0; i < rows.length; i++){
+                    rows[i].classList.remove('highlight'); 
+                }
+            }
+
+            document.getElementById('myTable') 
+			.addEventListener('click', function (item) { 
+
+				// To get tr tag 
+				// In the row where we click 				
+                var row = item.path[1];
+                row_selected = row; 
+
+				// var row_value = ""; 
+
+				// for (var j = 0; j < row.cells.length; j++) { 
+
+				// 	row_value += row.cells[j].innerHTML; 
+				// 	row_value += " | "; 
+				// } 
+
+				// // alert(row_value); 
+				// console.log(row_value);
+
+				// Toggle the highlight 
+				if (row.classList.contains('highlight')) 
+					row.classList.remove('highlight'); 
+				else{    
+                    clearSelection();                
+                    row.classList.add('highlight'); 
+                }
+            });
+
+            function httpSendData(id) {                            
+
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+                        // callback(xmlHttp.responseText);
+                        console.log(xmlHttp.responseText);
+
+                    }
+                }
+
+                xmlHttp.open("POST", "/delete", false); // true for asynchronous 
+                xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xmlHttp.send("id="+ id);
+            }
+            
+            function getSelectedRow(){
+
+                if(row_selected != null){
+                    
+                }else{
+                    return;
+                }
+
+                id = row_selected.cells[0].innerHTML;
+                
+                return id;
+            }
+
+            function sendDelete(){
+                httpSendData(getSelectedRow());
+            }
+        </script>
+
+<button onclick="sendDelete()">Delete</button>
         
     </body>
 
