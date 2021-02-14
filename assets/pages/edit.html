@@ -30,10 +30,34 @@
     </style>
     <script>
 
+        var id;
+
         class Person {
             name;
             address;
             age;
+        }
+
+        function getPersonFromStorage(person){
+            // Check browser support
+            if (typeof(Storage) !== "undefined") {
+            // Retrieve
+                person.id = localStorage.getItem("id");
+                person.name = localStorage.getItem("name");
+                person.address = localStorage.getItem("address");
+                person.age = localStorage.getItem("age");
+                id = person.id;
+                return person;
+            } else {
+                alert("Browser does not support Web Storage.");
+                return null;
+            }
+        }
+
+        function setPersonFill(person){
+            document.getElementById("fname").value = person.name;
+            document.getElementById("faddress").value = person.address;
+            document.getElementById("fage").value = person.age;
         }
 
         function getPersonFromScreen(person) {
@@ -45,6 +69,12 @@
 
             person.age = document.getElementById("fage").value;
             document.getElementById("fage").value = "";
+        }
+
+        function getStorageData(){
+            person = new Person();
+            getPersonFromStorage(person);
+            setPersonFill(person);
         }
 
         function httpSendData() {
@@ -59,9 +89,9 @@
                 }
             }
 
-            xmlHttp.open("POST", "/insert", true); // true for asynchronous 
+            xmlHttp.open("POST", "/update", true); // true for asynchronous 
             xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xmlHttp.send("fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
+            xmlHttp.send("id=" + id +"&fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
         }
 
 
@@ -69,7 +99,7 @@
 
 </head>
 
-<body>
+<body onload="getStorageData()">
     <div>
         <div>
             <label for="fname">Name:</label>
@@ -87,7 +117,7 @@
         </div>
 
         <div class="button-center">
-            <button onclick="httpSendData()">Save</button>
+            <button onclick="httpSendData()">Update</button>
             <!-- <button onclick="httpGetAsync()" >Cancel</button> -->
             
         </div>

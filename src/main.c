@@ -57,6 +57,19 @@ void Select_get(char **data, int rows, void *user_data)
   List_add(static_list, &person);
 }
 
+char *update_query(void *data)
+{
+  static char buffer[1024];
+
+  Person *person = (Person *)data;
+
+  memset(buffer, 0, 1024);
+
+  snprintf(buffer, 1024, "update Person set name=\'%s\', address=\'%s\', age=%d where id = %d", person->name, person->address, person->age, person->id);
+
+  return buffer;
+}
+
 char *select_query(void *data)
 {
   static char buffer[1024];
@@ -87,6 +100,8 @@ char *delete_query(void *data)
   int id = *(int *)data;
   static char buffer[1024] = {0};  
 
+  memset(buffer, 0, 1024);
+
   snprintf(buffer, 1024, "delete from Person where id = %d", id);
 
   return buffer;
@@ -116,7 +131,25 @@ int callback_new(const struct _u_request *request, struct _u_response *response,
 
 int callback_edit(const struct _u_request *request, struct _u_response *response, void *user_data)
 {
-  ulfius_set_string_body_response(response, 200, "Edit Page!");
+  char *page = NULL;
+  FILE_getFileContent("assets/pages/edit.html", "r", &page);
+  ulfius_set_string_body_response(response, 200, page);
+  free(page);
+
+  return U_CALLBACK_CONTINUE;
+}
+
+int callback_update(const struct _u_request *request, struct _u_response *response, void *user_data)
+{
+  Person person;
+  person.id = person.age = atoi(u_map_get(request->map_post_body, "id"));
+  strncpy(person.name, u_map_get(request->map_post_body, "fname"), NAME_LEN);
+  strncpy(person.address, u_map_get(request->map_post_body, "faddress"), ADDRESS_LEN);
+  person.age = atoi(u_map_get(request->map_post_body, "fage"));
+
+  Database_queryExec(update_query, &person);
+
+  ulfius_set_string_body_response(response, 200, "Update");
   return U_CALLBACK_CONTINUE;
 }
 
@@ -128,24 +161,25 @@ int callback_insert(const struct _u_request *request, struct _u_response *respon
   person.age = atoi(u_map_get(request->map_post_body, "fage"));
 
   Database_queryExec(insert_query, &person);
+  ulfius_set_string_body_response(response, 200, "");
 
-  char *page = NULL;
-  FILE_getFileContent("assets/pages/index.html", "r", &page);
-  ulfius_set_string_body_response(response, 200, page);
-  free(page);
+  // char *page = NULL;
+  // FILE_getFileContent("assets/pages/index.html", "r", &page);
+  // ulfius_set_string_body_response(response, 200, page);
+  // free(page);
   return U_CALLBACK_CONTINUE;
 }
 
 int callback_delete(const struct _u_request *request, struct _u_response *response, void *user_data)
 {
-  printf("POST parameter ID: %s.\n", u_map_get(request->map_post_body, "id"));
   int id = atoi(u_map_get(request->map_post_body, "id"));
   Database_queryExec(delete_query, &id);
+  ulfius_set_string_body_response(response, 200, "");
 
-  char *page = NULL;
-  FILE_getFileContent("assets/pages/index.html", "r", &page);
-  ulfius_set_string_body_response(response, 200, page);
-  free(page);
+  // char *page = NULL;
+  // FILE_getFileContent("assets/pages/index.html", "r", &page);
+  // ulfius_set_string_body_response(response, 200, page);
+  // free(page);
   
   return U_CALLBACK_CONTINUE;
 }
@@ -191,7 +225,6 @@ int main(void)
 
   static_list = List_create(100, sizeof(Person));
 
-  // Database_init("localhost", "root", "root", "Registry");
   Database_init(database.hostname, database.username, database.password, database.database);
 
   // Initialize instance with the port number
@@ -211,6 +244,7 @@ int main(void)
   ulfius_add_endpoint_by_val(&instance, "GET", "/", NULL, 0, &callback_index, NULL);
   ulfius_add_endpoint_by_val(&instance, "GET", "/new", NULL, 0, &callback_new, NULL);
   ulfius_add_endpoint_by_val(&instance, "GET", "/edit", NULL, 0, &callback_edit, NULL);
+  ulfius_add_endpoint_by_val(&instance, "POST", "/update", NULL, 0, &callback_update, NULL);
   ulfius_add_endpoint_by_val(&instance, "POST", "/insert", NULL, 1, &callback_insert, NULL);
   ulfius_add_endpoint_by_val(&instance, "POST", "/delete", NULL, 0, &callback_delete, NULL);
   ulfius_add_endpoint_by_val(&instance, "GET", "/send", NULL, 0, &callback_send_data, NULL);

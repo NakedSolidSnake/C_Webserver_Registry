@@ -93,9 +93,7 @@
             function getSelectedRow(){
 
                 table = document.getElementById('myTable');
-                // var content = table.row('.selected').value();
                 var columns=table.querySelectorAll('td');
-                // console.log(content);
                 for(var i=0;i<columns.length;i++)
                     console.log('Column '+i+': '+columns[i].innerHTML );               
             }
@@ -144,17 +142,6 @@
                 var row = item.path[1];
                 row_selected = row; 
 
-				// var row_value = ""; 
-
-				// for (var j = 0; j < row.cells.length; j++) { 
-
-				// 	row_value += row.cells[j].innerHTML; 
-				// 	row_value += " | "; 
-				// } 
-
-				// // alert(row_value); 
-				// console.log(row_value);
-
 				// Toggle the highlight 
 				if (row.classList.contains('highlight')) 
 					row.classList.remove('highlight'); 
@@ -169,9 +156,8 @@
                 var xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-                        // callback(xmlHttp.responseText);
-                        console.log(xmlHttp.responseText);
-
+                        // console.log(xmlHttp.responseText);
+                        window.location.replace('/');
                     }
                 }
 
@@ -196,9 +182,62 @@
             function sendDelete(){
                 httpSendData(getSelectedRow());
             }
+
+
+            function getSelectedRowPerson(){
+
+                if(row_selected != null){
+                    
+                }else{
+                    return;
+                }
+
+                person = new Person();
+
+                person.id = row_selected.cells[0].innerHTML;
+                person.name = row_selected.cells[1].innerHTML;
+                person.address = row_selected.cells[2].innerHTML;
+                person.age = row_selected.cells[3].innerHTML;
+
+                return person;
+            }
+
+            function httpSendDataEdit(person) {                            
+
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+                        console.log(xmlHttp.responseText);
+
+                    }
+                }
+
+                xmlHttp.open("POST", "/edit", true); // true for asynchronous 
+                xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xmlHttp.send("id="+ person.id +"&fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
+            }
+
+            function storePerson(person){
+                // Check browser support
+                if (typeof(Storage) !== "undefined") {
+                // Store
+                    localStorage.setItem("id", person.id);
+                    localStorage.setItem("name", person.name);
+                    localStorage.setItem("address", person.address);
+                    localStorage.setItem("age", person.age);
+                }
+            }
+
+            function sendEdit(){
+                person = getSelectedRowPerson();
+                storePerson(person)
+                window.location.replace('/edit');
+            }
+
         </script>
 
 <button onclick="sendDelete()">Delete</button>
+<button onclick="sendEdit()">Edit</button>
         
     </body>
 
