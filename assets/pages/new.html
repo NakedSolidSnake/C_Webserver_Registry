@@ -5,28 +5,74 @@
     <meta charset="uft-8">    
     <title>Add new registry</title>
     <style>
-        div{
-   
-    
+
+        body { 
+			text-align: center; 
+            /* background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,121,110,1) 54%, rgba(0,255,171,1) 87%); */
+            background: linear-gradient(90deg, rgba(215,215,219,1) 0%, rgba(237,240,240,1) 54%, rgba(255,255,255,1) 87%);
+		} 
+
+        .page_title { 
+            font-size: 70px;             
+            background: -webkit-linear-gradient(#eee, #333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 3px 3px;
+		} 
+
+        .add_sub_title{
+            font-size: 35px;             
+            background: -webkit-linear-gradient(#eee, #333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px;
         }
 
-        label {
-            display: inline-block;
-            width: 140px;
-            text-align: right;
-        }​
+        .label_text{
+            font-size: 25px;             
+            background: -webkit-linear-gradient(#eee, #333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px; 
+            margin-right: 15px;           
+        }
+
+        .text_input, .text_input_number{
+            border-radius: 5px;
+            height: 25px;
+        }
+
+        .text_input{
+            width: 250px;
+        }
+
+
+        .buttons{
+            margin-top: 10px;
+        }
 
         button{
-            margin: 0 auto;
-            display: inline-block; 
+            width: 120px;
+            height: 50px;
+            border-radius: 5px;
+            margin: 5px;
+            box-shadow: 1px 1px;
+            color: rgb(44, 45, 46);
+            text-shadow: 1px;
+            font-size: 30px;
+            font-weight: bold;            
+            background: linear-gradient(90deg, rgba(170,170,173,1) 0%, rgba(210,214,214,1) 54%, rgba(236,242,240,1) 87%);
+            cursor: pointer;
+            transition-duration: 350ms ;
         }
 
-        .button-center{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: auto;
+        button:hover{
+            color: rgb(250, 253, 255);
+            transform: scale(1.2);
+            transition-duration: 350ms ;
+            background: linear-gradient(90deg, rgba(33,33,33,1) 0%, rgba(59,60,60,1) 46%, rgba(117,116,116,1) 87%);
         }
+        
     </style>
     <script>
 
@@ -64,31 +110,37 @@
             xmlHttp.send("fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
         }
 
+        function returnHome(){
+            window.location.replace('/');
+        }
+
 
     </script>
 
 </head>
 
 <body>
+
+    <h1 class="page_title">Registry Webserver</h1>
+    <h2 class="add_sub_title">Add new registry</h2>
+
     <div>
-        <div>
-            <label for="fname">Name:</label>
-            <input type="text" id="fname" name="fname" required placeholder="Enter a name">
+        <div class="container">
+            
+            <label class="label_text" for="fname">Name:</label>
+            <input class="text_input" type="text" id="fname" name="fname" required placeholder="Enter a name">
+        
+            <label class="label_text" for="faddress">Address:</label>
+            <input class="text_input" type="text" id="faddress" name="faddress" required placeholder="Enter an address">
+        
+            <label class="label_text" for="fage">Age:</label>
+            <input class="text_input_number" type="number" id="fage" name="fage" min="0" max="100" required>
+                
         </div>
 
-        <div>
-            <label for="faddress">Address:</label>
-            <input type="text" id="faddress" name="faddress" required placeholder="Enter an address">
-        </div>
-
-        <div>
-            <label for="fage">Age:</label>
-            <input type="number" id="fage" name="fage" min="0" max="100" required>
-        </div>
-
-        <div class="button-center">
+        <div class="buttons">
             <button onclick="httpSendData()">Save</button>
-            <!-- <button onclick="httpGetAsync()" >Cancel</button> -->
+            <button onclick="returnHome()" >Cancel</button>
             
         </div>
     </div>
