@@ -5,7 +5,6 @@
     <meta charset="uft-8">    
     <title>Add new registry</title>
     <style>
-
         body { 
 			text-align: center; 
             /* background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,121,110,1) 54%, rgba(0,255,171,1) 87%); */
@@ -18,7 +17,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 3px 3px;
+            transition-duration: 350ms;
 		} 
+
+        .page_title:hover{
+            transform: scale(1.1);
+            transition-duration: 350ms;
+            cursor: pointer;
+        }
 
         .add_sub_title{
             font-size: 35px;             
@@ -121,7 +127,7 @@
 
 <body>
 
-    <h1 class="page_title">Registry Webserver</h1>
+    <h1 class="page_title" onclick="window.location.replace('/')">Registry Webserver</h1>
     <h2 class="add_sub_title">Add new registry</h2>
 
     <div>
@@ -134,7 +140,7 @@
             <input class="text_input" type="text" id="faddress" name="faddress" required placeholder="Enter an address">
         
             <label class="label_text" for="fage">Age:</label>
-            <input class="text_input_number" type="number" id="fage" name="fage" min="0" max="100" required>
+            <input class="text_input_number" type="number" id="fage" name="fage" min="0" max="100" required required required placeholder="00">
                 
         </div>
 

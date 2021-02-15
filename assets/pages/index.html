@@ -14,7 +14,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 3px 3px;
+            transition-duration: 350ms;
 		} 
+
+        .page_title:hover{
+            transform: scale(1.1);
+            transition-duration: 350ms;
+            cursor: pointer;
+        }
 
 		/* Basic CSS to design table */ 
 		table { 
@@ -145,7 +152,7 @@
 
     <body onload="getData()">
 
-        <h1 class="page_title">Registry Webserver</h1>
+        <h1 class="page_title" onclick="window.location.replace('/')">Registry Webserver</h1>
 
         <table id="myTable">
             <thead>
@@ -177,8 +184,10 @@
                 row_selected = row; 
 
 				// Toggle the highlight 
-				if (row.classList.contains('highlight')) 
-					row.classList.remove('highlight'); 
+				if (row.classList.contains('highlight')) {
+                    row.classList.remove('highlight'); 
+                    row_selected = null;
+                }
 				else{    
                     clearSelection();                
                     row.classList.add('highlight'); 
@@ -204,6 +213,7 @@
                 if(row_selected != null){
                     
                 }else{
+                    alert("Select a registry to delete");
                     return;
                 }
 
@@ -222,6 +232,7 @@
                 if(row_selected != null){
                     
                 }else{
+                    alert("Please select a registry to edit");
                     return;
                 }
 
@@ -235,20 +246,20 @@
                 return person;
             }
 
-            function httpSendDataEdit(person) {                            
+            // function httpSendDataEdit(person) {                            
 
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-                        console.log(xmlHttp.responseText);
+            //     var xmlHttp = new XMLHttpRequest();
+            //     xmlHttp.onreadystatechange = function () {
+            //         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            //             console.log(xmlHttp.responseText);
 
-                    }
-                }
+            //         }
+            //     }
 
-                xmlHttp.open("POST", "/edit", true); // true for asynchronous 
-                xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xmlHttp.send("id="+ person.id +"&fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
-            }
+            //     xmlHttp.open("POST", "/edit", true); // true for asynchronous 
+            //     xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            //     xmlHttp.send("id="+ person.id +"&fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
+            // }
 
             function storePerson(person){
                 // Check browser support
