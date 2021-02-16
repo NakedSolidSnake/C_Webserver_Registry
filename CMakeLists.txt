@@ -8,7 +8,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 # build webserver
 add_executable(webserver "")
-target_link_libraries(webserver PUBLIC ulfius ipc orcania database collection json)
+target_link_libraries(webserver PUBLIC ulfius ipc orcania database collection json pthread z)
 
 target_sources(webserver
   PUBLIC
