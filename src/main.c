@@ -450,7 +450,7 @@ int main(void)
     u_map_put(&file_config.mime_types, ".map", "application/octet-stream");
     u_map_put(&file_config.mime_types, ".json", "application/json");
     u_map_put(&file_config.mime_types, "*", "application/octet-stream");
-    file_config.files_path = "static";
+    file_config.files_path = "assets";
     file_config.url_prefix = PREFIX_STATIC;
   } else{
     return EXIT_FAILURE;
