@@ -3,86 +3,14 @@
 
 <head>
     <meta charset="uft-8">    
-    <title>Add new registry</title>
-    <link type="text/css" rel="stylesheet" href="/assets/styles/style.css">
-    <script>
-
-        var id;
-
-        class Person {
-            name;
-            address;
-            age;
-        }
-
-        function getPersonFromStorage(person){
-            // Check browser support
-            if (typeof(Storage) !== "undefined") {
-            // Retrieve
-                person.id = localStorage.getItem("id");
-                person.name = localStorage.getItem("name");
-                person.address = localStorage.getItem("address");
-                person.age = localStorage.getItem("age");
-                id = person.id;
-                return person;
-            } else {
-                alert("Browser does not support Web Storage.");
-                return null;
-            }
-        }
-
-        function setPersonFill(person){
-            document.getElementById("fname").value = person.name;
-            document.getElementById("faddress").value = person.address;
-            document.getElementById("fage").value = person.age;
-        }
-
-        function getPersonFromScreen(person) {
-            person.name = document.getElementById("fname").value;
-            document.getElementById("fname").value = "";
-
-            person.address = document.getElementById("faddress").value;
-            document.getElementById("faddress").value = "";
-
-            person.age = document.getElementById("fage").value;
-            document.getElementById("fage").value = "";
-        }
-
-        function getStorageData(){
-            person = new Person();
-            getPersonFromStorage(person);
-            setPersonFill(person);
-        }
-
-        function httpSendData() {
-
-            person = new Person();
-            getPersonFromScreen(person);            
-
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-                    window.location.replace('/');
-                }
-            }
-
-            xmlHttp.open("POST", "/update", true); // true for asynchronous 
-            xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xmlHttp.send("id=" + id +"&fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
-        }
-
-        function returnHome(){
-            window.location.replace('/');
-        }
-
-
-    </script>
-
+    <title>Add update registry</title>
+    <link type="text/css" rel="stylesheet" href="/assets/styles/style.css"> 
+    <script type="application/javascript" src="/assets/scripts/script.js"></script>   
 </head>
 
 <body onload="getStorageData()">
 
-    <h1 class="page_title" onclick="window.location.replace('/')">Registry Webserver</h1>
+    <h1 class="page_title" onclick="returnHome()">Registry Webserver</h1>
     <h2 class="add_sub_title">Update registry</h2>
     <div>
         <div>
@@ -97,7 +25,7 @@
         </div>
 
         <div class="buttons">
-            <button onclick="httpSendData()">Update</button>
+            <button onclick="sendUpdateRequest()">Update</button>
             <button onclick="returnHome()" >Cancel</button>
             
         </div>

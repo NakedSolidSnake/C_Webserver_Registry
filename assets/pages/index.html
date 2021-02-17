@@ -1,85 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Registry Webserver</title>
         <link type="text/css" rel="stylesheet" href="/assets/styles/style.css">
-        <script>
-
-            class Person{
-                id;
-                name;
-                address;
-                age;
-            }
-
-            var id;
-
-            function splitObject(objects){
-                var splitedObjects = objects.split(';')
-                return splitedObjects;
-            }
-
-            function createObject(values, object){
-                if(values.length > 0){
-                    var fields = values.split(',');
-                    object.id = fields[0];
-                    object.name = fields[1];
-                    object.address = fields[2];
-                    object.age = fields[3];
-                    return true;
-                }
-
-                return false;
-            }
-
-            function addPerson(person) {
-                var table = document.getElementById("myTable");
-                var row = table.insertRow(1);
-                var idCell1 = row.insertCell(0);
-                var nameCell2 = row.insertCell(1);
-                var addressCell3 = row.insertCell(2)
-                var ageCell3 = row.insertCell(3)
-
-                idCell1.innerHTML = person.id;
-                nameCell2.innerHTML = person.name;
-                addressCell3.innerHTML = person.address;
-                ageCell3.innerHTML = person.age;
-
-            }
-
-            function getData(){
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-                    var objects = splitObject(xmlHttp.responseText);
-                    for (let i = 0; i < objects.length; i++){
-                        person = new Person();
-                        if(createObject(objects[i], person) === true){
-                            addPerson(person)
-                        }
-                    }
-                }
-            }
-                xmlHttp.open("GET", "/send", true); // true for asynchronous 
-                xmlHttp.send(null);
-
-            }
-
-            function getSelectedRow(){
-
-                table = document.getElementById('myTable');
-                var columns=table.querySelectorAll('td');
-                for(var i=0;i<columns.length;i++)
-                    console.log('Column '+i+': '+columns[i].innerHTML );               
-            }
-
-
-            
-        </script>
     </head>
 
-    <body onload="getData()">
-        <script type="application/javascript" src="/assets/scripts/script.js"></script>
-        <h1 class="page_title" onclick="window.location.replace('/')">Registry Webserver</h1>
+    <body onload='sendSelectRequest()'>        
+        <h1 class="page_title" onclick="returnHome()">Registry Webserver</h1>
 
         <table id="myTable">
             <thead>
@@ -90,132 +17,12 @@
             </thead>         
         </table>        
 
-        <script>
-            var row_selected;
-
-            function clearSelection(){
-                var table = document.getElementById('myTable');
-                var rows = table.querySelectorAll('tr');
-
-                for(var i = 0; i < rows.length; i++){
-                    rows[i].classList.remove('highlight'); 
-                }
-            }
-
-            document.getElementById('myTable') 
-			.addEventListener('click', function (item) { 
-
-				// To get tr tag 
-				// In the row where we click 				
-                var row = item.path[1];
-                row_selected = row; 
-
-				// Toggle the highlight 
-				if (row.classList.contains('highlight')) {
-                    row.classList.remove('highlight'); 
-                    row_selected = null;
-                }
-				else{    
-                    clearSelection();                
-                    row.classList.add('highlight'); 
-                }
-            });
-
-            function httpSendData(id) {                            
-
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-                        window.location.replace('/');
-                    }
-                }
-
-                xmlHttp.open("POST", "/delete", false); // true for asynchronous 
-                xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xmlHttp.send("id="+ id);
-            }
-            
-            function getSelectedRow(){
-
-                if(row_selected != null){
-                    
-                }else{
-                    alert("Select a registry to delete");
-                    return;
-                }
-
-                id = row_selected.cells[0].innerHTML;
-                
-                return id;
-            }
-
-            function sendDelete(){
-                httpSendData(getSelectedRow());
-            }
-
-
-            function getSelectedRowPerson(){
-
-                if(row_selected != null){
-                    
-                }else{
-                    alert("Please select a registry to edit");
-                    return;
-                }
-
-                person = new Person();
-
-                person.id = row_selected.cells[0].innerHTML;
-                person.name = row_selected.cells[1].innerHTML;
-                person.address = row_selected.cells[2].innerHTML;
-                person.age = row_selected.cells[3].innerHTML;
-
-                return person;
-            }
-
-            // function httpSendDataEdit(person) {                            
-
-            //     var xmlHttp = new XMLHttpRequest();
-            //     xmlHttp.onreadystatechange = function () {
-            //         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            //             console.log(xmlHttp.responseText);
-
-            //         }
-            //     }
-
-            //     xmlHttp.open("POST", "/edit", true); // true for asynchronous 
-            //     xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            //     xmlHttp.send("id="+ person.id +"&fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
-            // }
-
-            function storePerson(person){
-                // Check browser support
-                if (typeof(Storage) !== "undefined") {
-                // Store
-                    localStorage.setItem("id", person.id);
-                    localStorage.setItem("name", person.name);
-                    localStorage.setItem("address", person.address);
-                    localStorage.setItem("age", person.age);
-                }
-            }
-
-            function sendEdit(){
-                person = getSelectedRowPerson();
-                storePerson(person)
-                window.location.replace('/edit');
-            }
-
-            function sendNew(){
-                window.location.replace('/new');
-            }
-
-        </script>
+        
         <div class="buttons">
             <button onclick="sendNew()">New</button>
             <button onclick="sendEdit()">Edit</button>
-            <button onclick="sendDelete()">Delete</button>
+            <button onclick="sendDeleteRequest()">Delete</button>
         </div>
-        
+        <script type="application/javascript" src="/assets/scripts/script.js"></script>
     </body>
-
 </html>

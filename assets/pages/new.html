@@ -2,77 +2,36 @@
 <html>
 
 <head>
-    <meta charset="uft-8">    
+    <meta charset="uft-8">
     <title>Add new registry</title>
     <link type="text/css" rel="stylesheet" href="/assets/styles/style.css">
-    <script>
-
-        class Person {
-            name;
-            address;
-            age;
-        }
-
-        function getPersonFromScreen(person) {
-            person.name = document.getElementById("fname").value;
-            document.getElementById("fname").value = "";
-
-            person.address = document.getElementById("faddress").value;
-            document.getElementById("faddress").value = "";
-
-            person.age = document.getElementById("fage").value;
-            document.getElementById("fage").value = "";
-        }
-
-        function httpSendData() {
-
-            person = new Person();
-            getPersonFromScreen(person);            
-
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-                    window.location.replace('/');
-                }
-            }
-
-            xmlHttp.open("POST", "/insert", true); // true for asynchronous 
-            xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xmlHttp.send("fname="+ person.name.replace(/\s/g, '+') +"&faddress="+ person.address.replace(/\s/g, '+') + "&fage=" + person.age);
-        }
-
-        function returnHome(){
-            window.location.replace('/');
-        }
-
-
-    </script>
-
+    <script type="application/javascript" src="/assets/scripts/script.js"></script>
 </head>
 
 <body>
 
-    <h1 class="page_title" onclick="window.location.replace('/')">Registry Webserver</h1>
+    <h1 class="page_title" onclick="returnHome()">Registry Webserver</h1>
     <h2 class="add_sub_title">Add new registry</h2>
 
     <div>
         <div class="container">
-            
+
             <label class="label_text" for="fname">Name:</label>
             <input class="text_input" type="text" id="fname" name="fname" required placeholder="Enter a name">
-        
+
             <label class="label_text" for="faddress">Address:</label>
             <input class="text_input" type="text" id="faddress" name="faddress" required placeholder="Enter an address">
-        
+
             <label class="label_text" for="fage">Age:</label>
-            <input class="text_input_number" type="number" id="fage" name="fage" min="0" max="100" required required required placeholder="00">
-                
+            <input class="text_input_number" type="number" id="fage" name="fage" min="0" max="100" required required
+                required placeholder="00">
+
         </div>
 
         <div class="buttons">
-            <button onclick="httpSendData()">Save</button>
-            <button onclick="returnHome()" >Cancel</button>
-            
+            <button onclick="sendInsertRequest()">Save</button>
+            <button onclick="returnHome()">Cancel</button>
+
         </div>
     </div>
 </body>
